@@ -181,7 +181,7 @@ public class ParseMethods {
 		// User Input loop to test <term>
 		
 		//*********************************************************************************
-		/*Scanner input = new Scanner(System.in);
+		Scanner input = new Scanner(System.in);
 		String again = "";
 		String exp = "";
 		while(true)
@@ -189,7 +189,8 @@ public class ParseMethods {
 			System.out.print("Enter an expression: ");
 			exp = input.nextLine();
 			System.out.println("");
-			System.out.print(exp);
+			System.out.print(exp + ": ");
+			System.out.println("");
 			if(term(exp))
 				System.out.println(" is an expression");
 			else
@@ -203,12 +204,12 @@ public class ParseMethods {
 			if(again.equals("n"))
 				break;
 			
-		}*/
+		}
 		//*********************************************************************************
 		
 		
 		//*********************************************************************************
-		Scanner input = new Scanner(System.in);
+		/*Scanner input = new Scanner(System.in);
 		String again = "";
 		String exp = "";
 		while(true)
@@ -232,6 +233,8 @@ public class ParseMethods {
 			
 		}
 		//*********************************************************************************
+		
+		*/
 		//System.out.println(term("B* (C+ (C+B*A) ) / 6")? "yes": "no");
 	}
 	
@@ -430,7 +433,8 @@ public class ParseMethods {
 			{
 				if(x.substring(x.length() - 1).equals(")"))
 				{
-					return true;
+					String sub = x.substring(1, x.length() - 1);
+					return term(sub);
 				}
 				else // no closing parenthesis
 				{
@@ -463,9 +467,47 @@ public class ParseMethods {
 		
 		
 		//create a tokenizer thant splits on all mulops
-		//StringTokenizer st = new StringTokenizer(x, "*/%", true);//SPLIT ARRAY
+		StringTokenizer st = new StringTokenizer(x, "*/%", true);
+			String token = "";
+			LinkedList<String> stQueue = new LinkedList<String>();
+			
+			while(st.hasMoreTokens())
+			{
+				token = st.nextToken();
+				//System.out.println(token);
+				if (!token.contains("("))
+				{
+					stQueue.add(token);
+				}
+				else
+				{
+					String newToken = "";
+					int parenCount = 0;
+					while (true)
+					{
+						parenCount += count(token, '(');
+						parenCount -= count(token, ')');
+						newToken += token;
+						if (parenCount == 0 || !st.hasMoreTokens())
+						{
+							stQueue.add(newToken);
+							break;
+						}
+						token = st.nextToken();
+					}
+				}
+			}
+		
+		String[] arr = new String[stQueue.size()];
+		for (int i = 0; i < arr.length; i++)
+		{
+			arr[i] = stQueue.get(i);
+		}
+		
 		//((?<=;)|(?=;))
-		String[] arr = x.split("((?<=([\\*/%]+(?![^\\(]*\\))))|(?=([\\*/%]+(?![^\\(]*\\))))))//[\\*/%]+(?![^\\(]*\\)");
+		//String[] arr = x.split("((?<=([\\*/%]+(?![^\\(]*\\))))|(?=([\\*/%]+(?![^\\(]*\\))))))//[\\*/%]+(?![^\\(]*\\)");
+		
+		
 		
 		System.out.println("evaluating term: [");
 		for(int i = 0; i < arr.length; i++)
@@ -585,17 +627,17 @@ public class ParseMethods {
 		
 	}
 	
-	public static boolean expr(String x)
+	/*public static boolean expr(String x)
 	{
 		//<expr> -> <term> { <addop> <term>}
 		//				OR
 		//<expr> -> <term> | <expr> <addop> <term>
 		
-		/*StringTokenizer st = new StringTokenizer(x, "[+-\\(\\),]", true);
+		StringTokenizer st = new StringTokenizer(x, "[+-\\(\\),]", true);
 		while(st.hasMoreTokens())
 		{
 			System.out.println(st.nextToken());
-		}*/
+		}
 		
 		//[+-]+(?![^\\(]*\\))
 		String[] arr = x.split("((?<=([\\+-]+(?![^\\(]*\\))))|(?=([\\+-]+(?![^\\(]*\\)))))");
@@ -667,8 +709,23 @@ public class ParseMethods {
 				
 		}
 		
-	}
+	}*/
 	
+	public static Integer count( String st, char c )
+    {
+        Integer i = new Integer(0);
+        Integer count = new Integer(0);
+        
+        for(i = 0; i < st.length(); i++)
+        {
+            
+            if( st.charAt(i) == c )
+            {
+                count++;
+            }
+        }
+        return count;
+    }
 
 
 }
