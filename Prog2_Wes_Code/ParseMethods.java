@@ -181,7 +181,7 @@ public class ParseMethods {
 		// User Input loop to test <term>
 		
 		//*********************************************************************************
-		Scanner input = new Scanner(System.in);
+		/*Scanner input = new Scanner(System.in);
 		String again = "";
 		String exp = "";
 		while(true)
@@ -204,12 +204,13 @@ public class ParseMethods {
 			if(again.equals("n"))
 				break;
 			
-		}
+		}*/
 		//*********************************************************************************
 		
 		
+		
 		//*********************************************************************************
-		/*Scanner input = new Scanner(System.in);
+		Scanner input = new Scanner(System.in);
 		String again = "";
 		String exp = "";
 		while(true)
@@ -224,9 +225,31 @@ public class ParseMethods {
 				System.out.println("[" + exp + " is not an expression]");
 			
 			
+			//TOKENS
+			/*for (int i = 0; i < args.length; i++)
+				System.out.println("args[" + i + "]: " +  args[i]);*/
+		
+			if (args.length > 0 && args[0].equals("-t"))
+			{
+				StringTokenizer st = new StringTokenizer(exp, "+-/%*() ", true);
+				System.out.println("Tokens: ");
+				while(st.hasMoreTokens())
+				{
+					String token = st.nextToken();
+					if (!token.equals(" "))
+					{
+						System.out.print(token);
+						if(st.hasMoreTokens())
+						{
+							System.out.print(" , ");
+						}
+					}
+				}
+				
+				
+			}
 			
-			
-			System.out.println("again? (y/n)");
+			System.out.println("\nagain? (y/n)");
 			again = input.nextLine();
 			if(again.equals("n"))
 				break;
@@ -234,7 +257,7 @@ public class ParseMethods {
 		}
 		//*********************************************************************************
 		
-		*/
+		
 		//System.out.println(term("B* (C+ (C+B*A) ) / 6")? "yes": "no");
 	}
 	
@@ -406,9 +429,6 @@ public class ParseMethods {
 	{
 		// <factor> -> <integer> | <float> | <id> | '(' <expr> ')' | [-] <factor>
 		
-		//TEMPORARY IMPLEMENTATION
-		// <factor> -> <integer> | <id> | <float> | [-] <factor>
-		
 		
 		
 		x = x.trim();//trim leading and trailing whitespace
@@ -420,21 +440,22 @@ public class ParseMethods {
 			// if the first char is a '-' then the rest of the string must match a factor
 			if(x.substring(0,1).equals("-")) 
 			{
-				if(factor(x.substring(1)))
-				{
-					return true;
-				}
-				else
-				{
-					return false;
-				}
+				return factor(x.substring(1));
 			}
 			else if(x.substring(0,1).equals("("))
 			{
 				if(x.substring(x.length() - 1).equals(")"))
 				{
 					String sub = x.substring(1, x.length() - 1);
-					return term(sub);
+					
+					//nothing inside parenthesies
+					if (sub.length() < 1)
+					{
+						return false;
+					}
+					
+					
+					return expr(sub);
 				}
 				else // no closing parenthesis
 				{
@@ -469,7 +490,7 @@ public class ParseMethods {
 		//create a tokenizer thant splits on all mulops
 		StringTokenizer st = new StringTokenizer(x, "*/%", true);
 			String token = "";
-			LinkedList<String> stQueue = new LinkedList<String>();
+			LinkedList<String> stList = new LinkedList<String>();
 			
 			while(st.hasMoreTokens())
 			{
@@ -477,7 +498,7 @@ public class ParseMethods {
 				//System.out.println(token);
 				if (!token.contains("("))
 				{
-					stQueue.add(token);
+					stList.add(token);
 				}
 				else
 				{
@@ -490,7 +511,7 @@ public class ParseMethods {
 						newToken += token;
 						if (parenCount == 0 || !st.hasMoreTokens())
 						{
-							stQueue.add(newToken);
+							stList.add(newToken);
 							break;
 						}
 						token = st.nextToken();
@@ -498,10 +519,10 @@ public class ParseMethods {
 				}
 			}
 		
-		String[] arr = new String[stQueue.size()];
+		String[] arr = new String[stList.size()];
 		for (int i = 0; i < arr.length; i++)
 		{
-			arr[i] = stQueue.get(i);
+			arr[i] = stList.get(i);
 		}
 		
 		//((?<=;)|(?=;))
@@ -710,6 +731,191 @@ public class ParseMethods {
 		}
 		
 	}*/
+	
+	public static Boolean expr( String x )
+    {
+        StringTokenizer st = new StringTokenizer(x, "+-", true);
+        StringTokenizer db = new StringTokenizer(x, "+-", true);
+        
+        Queue<String> stParseQueue = new LinkedList<String>();
+        Queue<String> stQueue = new LinkedList<String>();
+        
+        String token = new String( );
+        String lastToken = new String( );
+        Integer count = new Integer(0);
+        Integer parenCount = new Integer(0);
+        
+        Boolean concatNext = new Boolean(false);
+        
+        //debug
+        while( db.hasMoreTokens() ){ System.out.println(db.nextToken());}
+        //enddebug
+        
+        //handle parethesis token work
+        while( st.hasMoreTokens() )
+        {
+            token = st.nextToken( );
+            
+
+            
+            if( token.contains("("))
+            {
+                parenCount += count( token, '(');
+            }
+            
+            if( token.contains(")") )
+            {
+                parenCount -= count( token, ')');
+            }
+            
+            if( concatNext )
+            {
+                token = lastToken.concat(token);
+            }
+            
+            if( parenCount != 0 )
+            {
+                concatNext = true;
+                lastToken = token;
+            }
+            else
+            {
+                concatNext = false;
+            }
+            
+            lastToken = token;
+            if( parenCount == 0 || !st.hasMoreTokens() )
+            {
+                stQueue.add(token);
+            }
+        }
+        
+        
+        System.out.println( "---------------------------------------------");
+        concatNext = false;
+        //handle "-"'s that are signs rather that operators
+        token = stQueue.poll();
+        //System.out.println("Debug "+token);
+        if(token.equals("-"))
+        {
+            concatNext = true;
+            lastToken = token;
+        }
+        else
+        {
+            stParseQueue.add(token);
+            lastToken = token;
+        }
+        
+        //System.out.println(concatNext);
+        while( !stQueue.isEmpty() )
+        {
+            token = stQueue.poll();
+            token = token.trim();
+            if( token.equals(""))
+            {
+                //System.out.println( "nope");
+                continue;
+            }
+            //System.out.println("Debug" +concatNext);
+            //System.out.println("Debug "+token);
+
+            if( concatNext == true )
+            {
+                token = lastToken.concat(token);
+                lastToken = token;
+                concatNext = false;
+            }
+            
+            if( token.equals("-") )
+            {
+                //System.out.println("Got here");
+                if( lastToken.endsWith("-") || lastToken.endsWith("+") )
+                {
+                    concatNext = true;
+                    lastToken = token;
+                    continue;
+                }
+                else if( lastToken.endsWith("*") || lastToken.endsWith("/") ||
+                         lastToken.endsWith("%"))
+                {
+                    concatNext = true;
+                    token = lastToken.concat(token);
+                    lastToken = token;
+                    continue;
+                }
+            }
+            
+            //System.out.println(token);
+            lastToken = token;
+            stParseQueue.add(token);
+        }
+        // *******************************************************************************************
+        //pop fist
+        /*String[] arr = new String[stParseQueue.size()];
+		int read = 0;
+        while( !stParseQueue.isEmpty() )
+        {
+            token = stParseQueue.poll( );
+            System.out.println(token);
+			arr[read] = token;
+			read++;
+        }
+		
+        if (arr.length <= 1)
+		{
+			return term(arr[0]);
+		}
+		else
+		{
+			int lastAddop = -1;
+			for (int i = 0; i < arr.length; i++)
+				{
+					if(addop(arr[i]))
+					{
+						lastAddop = i;
+					}
+					
+				}
+				
+				String[] exprarr = Arrays.copyOfRange(arr, 0, lastAddop);
+				
+			// no expr before mulop
+			if (exprarr.length == 0)
+				return false;
+			
+			// stuff the new expr array into a string 
+			String exprcheck = "";
+			for(int i = 0; i < exprarr.length; i++)
+			{
+				exprcheck += exprarr[i];
+			}
+			//System.out.println ("Expr: " + exprcheck);
+			
+			// grab the alleged addop
+			String addopcheck = arr[lastAddop];
+			//System.out.println ("mulop: " + multop);
+			
+			// no term
+			if (lastAddop == arr.length - 1)
+				return false;
+			
+			// grab the contents of the last index for the term
+			String termcheck = arr[lastAddop + 1];
+			//System.out.println ("term: " + termcheck);
+			
+			if(expr(exprcheck) && addop(addopcheck) && term(termcheck))
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}*/
+		// *************************************************************************************
+        
+    }
 	
 	public static Integer count( String st, char c )
     {
