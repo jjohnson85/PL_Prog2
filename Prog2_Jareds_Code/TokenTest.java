@@ -36,6 +36,7 @@ class TokenTest
         Queue<String> stQueue = new LinkedList<String>();
         
         String token = new String( );
+        String token2 = new String( );
         String lastToken = new String( );
         Integer count = new Integer(0);
         Integer parenCount = new Integer(0);
@@ -147,14 +148,61 @@ class TokenTest
         }
         
         //pop fist
+        token = stParseQueue.poll();
+        if( !term(token))
+        {
+            return false;
+        }
         
         while( !stParseQueue.isEmpty() )
         {
             token = stParseQueue.poll( );
+            
+            try
+            {
+                token2 = stParseQueue.poll( );
+            }
+            catch( Exception ex )
+            {
+                return false;
+            }
+            
+            if( !addop(token) || !term(token2) )
+            {
+                return false;
+            }
             System.out.println(token);
+            System.out.println(token2);
         }
         
         return true;
+    }
+    
+    public static Boolean factor( String st )
+    {
+        
+        if( st.startsWith("-") )
+        {
+            return factor( st.substring( 1, st.length() ));
+        }
+        else if( st.startsWith( "(") )
+        {
+            if( st.endsWith(")"))
+            {
+                return expr( st.substring(1, st.lastIndexOf(")")-1) );
+            }
+            else
+            {
+                return false;
+            }
+        }
+        
+        if( intgr(st) || float(st) || id(st) )
+        {
+            return true;
+        }
+        
+        return false;
     }
     
     public static Integer count( String st, char c )
