@@ -492,32 +492,33 @@ public class ParseMethods {
 			String token = "";
 			LinkedList<String> stList = new LinkedList<String>();
 			
-			while(st.hasMoreTokens())
+		while(st.hasMoreTokens())
+		{
+			token = st.nextToken();
+			//System.out.println(token);
+			if (!token.contains("("))
 			{
-				token = st.nextToken();
-				//System.out.println(token);
-				if (!token.contains("("))
+				stList.add(token);
+			}
+			else
+			{
+				String newToken = "";
+				int parenCount = 0;
+				while (true)
 				{
-					stList.add(token);
-				}
-				else
-				{
-					String newToken = "";
-					int parenCount = 0;
-					while (true)
+					parenCount += count(token, '(');
+					parenCount -= count(token, ')');
+					newToken += token;
+					if (parenCount == 0 || !st.hasMoreTokens())
 					{
-						parenCount += count(token, '(');
-						parenCount -= count(token, ')');
-						newToken += token;
-						if (parenCount == 0 || !st.hasMoreTokens())
-						{
-							stList.add(newToken);
-							break;
-						}
-						token = st.nextToken();
+						stList.add(newToken);
+						break;
 					}
+					token = st.nextToken();
 				}
 			}
+		}
+			
 		
 		String[] arr = new String[stList.size()];
 		for (int i = 0; i < arr.length; i++)
@@ -569,6 +570,7 @@ public class ParseMethods {
 				{
 					lastMulop = i;
 				}
+				
 				
 			}
 			
@@ -648,6 +650,7 @@ public class ParseMethods {
 		
 	}
 	
+	// WES
 	/*public static boolean expr(String x)
 	{
 		//<expr> -> <term> { <addop> <term>}
@@ -732,7 +735,9 @@ public class ParseMethods {
 		
 	}*/
 	
-	public static Boolean expr( String x )
+	
+	//HALF JARED HALF WES
+	/*public static Boolean expr( String x )
     {
         StringTokenizer st = new StringTokenizer(x, "+-", true);
         StringTokenizer db = new StringTokenizer(x, "+-", true);
@@ -840,19 +845,19 @@ public class ParseMethods {
                          lastToken.endsWith("%"))
                 {
                     concatNext = true;
-                    token = lastToken.concat(token);
+                    //token = lastToken.concat(token);
                     lastToken = token;
                     continue;
                 }
             }
             
-            //System.out.println(token);
+            
             lastToken = token;
             stParseQueue.add(token);
         }
         // *******************************************************************************************
         //pop fist
-        /*String[] arr = new String[stParseQueue.size()];
+        String[] arr = new String[stParseQueue.size()];
 		int read = 0;
         while( !stParseQueue.isEmpty() )
         {
@@ -861,6 +866,7 @@ public class ParseMethods {
 			arr[read] = token;
 			read++;
         }
+		System.out.println("arr length: " + arr.length);
 		
         if (arr.length <= 1)
 		{
@@ -912,9 +918,162 @@ public class ParseMethods {
 			{
 				return false;
 			}
-		}*/
+		}
 		// *************************************************************************************
         
+    }*/
+	
+	
+	//JAREDS COMPLETE
+	 public static Boolean expr( String x )
+    {
+        StringTokenizer st = new StringTokenizer(x, "+-", true);
+        StringTokenizer db = new StringTokenizer(x, "+-", true);
+        
+        Queue<String> stParseQueue = new LinkedList<String>();
+        Queue<String> stQueue = new LinkedList<String>();
+        
+        String token = new String( );
+        String token2 = new String( );
+        String lastToken = new String( );
+        Integer count = new Integer(0);
+        Integer parenCount = new Integer(0);
+        
+        Boolean concatNext = new Boolean(false);
+        
+        //debug
+        while( db.hasMoreTokens() ){ System.out.println(db.nextToken());}
+        //enddebug
+        
+        //handle parethesis token work
+        while( st.hasMoreTokens() )
+        {
+            token = st.nextToken( );
+            
+
+            
+            if( token.contains("("))
+            {
+                parenCount += count( token, '(');
+            }
+            
+            if( token.contains(")") )
+            {
+                parenCount -= count( token, ')');
+            }
+            
+            if( concatNext )
+            {
+                token = lastToken.concat(token);
+            }
+            
+            if( parenCount != 0 )
+            {
+                concatNext = true;
+                lastToken = token;
+            }
+            else
+            {
+                concatNext = false;
+            }
+            
+            lastToken = token;
+            if( parenCount == 0 || !st.hasMoreTokens() )
+            {
+                stQueue.add(token);
+            }
+        }
+        
+        
+        System.out.println( "---------------------------------------------");
+        concatNext = false;
+        //handle "-"'s that are signs rather that operators
+        token = stQueue.poll();
+        System.out.println("Debug "+token);
+        if(token.equals("-"))
+        {
+            concatNext = true;
+            lastToken = token;
+        }
+        else
+        {
+            stParseQueue.add(token);
+            lastToken = token;
+        }
+        
+        //System.out.println(concatNext);
+        while( !stQueue.isEmpty() )
+        {
+            token = stQueue.poll();
+            token = token.trim();
+            if( token.equals(""))
+            {
+                //System.out.println( "nope");
+                continue;
+            }
+            //System.out.println("Debug" +concatNext);
+            //System.out.println("Debug "+token);
+
+            if( concatNext == true )
+            {
+                token = lastToken.concat(token);
+                lastToken = token;
+                concatNext = false;
+            }
+            
+            if( token.equals("-") )
+            {
+                //System.out.println("Got here");
+                if( lastToken.endsWith("-") || lastToken.endsWith("+")  )
+                {
+                    concatNext = true;
+                    lastToken = token;
+                    continue;
+                }
+                else if( lastToken.endsWith("*") || lastToken.endsWith("/") ||
+                         lastToken.endsWith("%"))
+                {
+                    concatNext = true;
+                    token = lastToken.concat(token);
+                    lastToken = token;
+                    continue;
+                }
+            }
+            
+            System.out.println(token);
+            lastToken = token;
+            stParseQueue.add(token);
+        }
+        
+        //pop fist
+        token = stParseQueue.poll();
+        if( !term(token))
+        {
+            return false;
+        }
+        
+        while( !stParseQueue.isEmpty() )
+        {
+            token = stParseQueue.poll( );
+            
+            try
+            {
+                token2 = stParseQueue.poll( );
+            }
+            catch( Exception ex )
+            {
+                return false;
+            }
+            
+            if( !addop(token) || !term(token2) )
+            {
+                return false;
+            }
+            System.out.println(token);
+            System.out.println(token2);
+        }
+        
+        return true;
     }
 	
 	public static Integer count( String st, char c )
