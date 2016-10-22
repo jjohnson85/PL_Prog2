@@ -87,19 +87,23 @@ class TokenTest
         }
         
         
-        System.out.println( "---------------------------------------------");
         concatNext = false;
         //handle "-"'s that are signs rather that operators
         token = stQueue.poll();
         //System.out.println("Debug "+token);
+        System.out.println( "Error with stuff debug -----------------");
         if(token.equals("-"))
         {
             concatNext = true;
             lastToken = token;
         }
-        else
+        else if(stQueue.isEmpty() )
         {
             stParseQueue.add(token);
+            lastToken = token;
+        }
+        else
+        {
             lastToken = token;
         }
         
@@ -123,6 +127,7 @@ class TokenTest
                 concatNext = false;
             }
             
+            
             if( token.equals("-") )
             {
                 //System.out.println("Got here");
@@ -145,8 +150,16 @@ class TokenTest
             //System.out.println(token);
             lastToken = token;
             stParseQueue.add(token);
+            
         }
         
+        
+        //print parse Queue
+        while( !stParseQueue.isEmpty())
+        {
+            System.out.println( stParseQueue.poll());
+        }
+        /*
         //pop fist
         token = stParseQueue.poll();
         if( !term(token))
@@ -174,7 +187,7 @@ class TokenTest
             System.out.println(token);
             System.out.println(token2);
         }
-        
+        */
         return true;
     }
     
@@ -196,13 +209,29 @@ class TokenTest
                 return false;
             }
         }
-        
-        if( intgr(st) || float(st) || id(st) )
+        /*
+        if( intgr(st) || flt(st) || id(st) )
         {
             return true;
         }
         
         return false;
+*/
+        return false;
+    }
+    
+    public static Boolean flt( String str )
+    {
+        StringTokenizer st = new StringTokenizer(str, ".", true);
+        String inttoken = new String();
+        String inttoken2 = new String( );
+        while( st.hasMoreTokens() )
+        {
+            inttoken = st.nextToken();
+            st.nextToken();
+            inttoken2 = st.nextToken();
+        }
+        return true;
     }
     
     public static Integer count( String st, char c )
@@ -221,12 +250,4 @@ class TokenTest
         return count;
     }
     
-    public static Boolean factor( String st )
-    {
-        if( st.startsWith("-") )
-        {
-            
-        }
-        return true;
-    }
 }
