@@ -300,7 +300,7 @@ public class ParseMethods {
 	public static boolean digit(String x)
 	{
 		//<digit> -> 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
-		
+		System.out.println("Digit: " + x);
 		//trim whitespace
 		//x = x.trim(); //trim leading and trailing whitespace
 		
@@ -310,10 +310,12 @@ public class ParseMethods {
 		x.equals("4") || x.equals("5") || x.equals("6") || x.equals("7") || 
 		x.equals("8") || x.equals("9"))
 		{
+			//System.out.println("yes");
 			return true;
 		}
 		else
 		{
+			//System.out.println("nope");
 			return false;
 		}
 	}
@@ -364,13 +366,14 @@ public class ParseMethods {
 		//			OR
 		// <integer> -> <digit> | <digit> <integer>
 		
-		
+		//System.out.println("Int testing: " + x);
+		System.out.println("x.length" + x.length());
 		//x = x.trim(); //trim leading and trailing whitespace
 		//System.out.println("Integer Test: " + x);
 		
 		if (x.length() == 1) //base case
 		{
-			return digit(x)? true: false;
+			return digit(x);
 		}
 		else if(x.length() > 0) // recursive call
 		{
@@ -425,7 +428,8 @@ public class ParseMethods {
 		}
 	}
 	
-	public static boolean factor(String x)
+	//WES' FACTOR
+	/*public static boolean factor(String x)
 	{
 		// <factor> -> <integer> | <float> | <id> | '(' <expr> ')' | [-] <factor>
 		
@@ -475,7 +479,44 @@ public class ParseMethods {
 		{
 			return false;
 		}
-	}
+	}*/
+	
+	//JAREDS FACTOR
+	 public static Boolean factor( String st )
+    {
+		//System.out.println("Testing: " + st);
+        st = st.trim();
+        if( st.startsWith("-") )
+        {
+            return factor( st.substring( 1, st.length() ));
+        }
+        else if( st.startsWith( "(") )
+        {
+            if( st.endsWith(")"))
+            {
+				String test = st.substring(1, st.length()-1);
+				
+				//nothing inside parenthesies
+				if(test.length() < 1)
+				{
+					return false;
+				}
+                return expr( test );
+            }
+            else
+            {
+                return false;
+            }
+        }
+        
+        if( integer(st) || isfloat(st) || id(st) )
+        {
+			System.out.println("yo");
+            return true;
+        }
+        
+        return false;
+    }
 	
 	
 	public static boolean term(String x)
@@ -925,7 +966,7 @@ public class ParseMethods {
 	
 	
 	//JAREDS COMPLETE
-	 public static Boolean expr( String x )
+	/* public static Boolean expr( String x )
     {
         StringTokenizer st = new StringTokenizer(x, "+-", true);
         StringTokenizer db = new StringTokenizer(x, "+-", true);
@@ -995,11 +1036,15 @@ public class ParseMethods {
             concatNext = true;
             lastToken = token;
         }
-        else
+        else if (stQueue.isEmpty())
         {
             stParseQueue.add(token);
             lastToken = token;
         }
+		else
+		{
+			lastToken = token;
+		}
         
         //System.out.println(concatNext);
         while( !stQueue.isEmpty() )
@@ -1046,7 +1091,10 @@ public class ParseMethods {
         }
         
         //pop fist
+		System.out.println( "DEBUG:-----------TOKEN FROM PARSEQUEUE------------------");
         token = stParseQueue.poll();
+		System.out.println( token );
+		System.out.println(" --------------------------------------------------");
         if( !term(token))
         {
             return false;
@@ -1071,6 +1119,168 @@ public class ParseMethods {
             }
             System.out.println(token);
             System.out.println(token2);
+        }
+        
+        return true;
+    }*/
+	
+	//JAREDS COMPLETE 2
+	public static Boolean expr( String x )
+    {
+        StringTokenizer st = new StringTokenizer(x, "+-", true);
+        StringTokenizer db = new StringTokenizer(x, "+-", true);
+        
+        Queue<String> stParseQueue = new LinkedList<String>();
+        Queue<String> stQueue = new LinkedList<String>();
+        
+        String token = new String( );
+        String token2 = new String( );
+        String lastToken = new String( );
+        Integer count = new Integer(0);
+        Integer parenCount = new Integer(0);
+        
+        Boolean concatNext = new Boolean(false);
+        
+        //debug
+        while( db.hasMoreTokens() ){ System.out.println(db.nextToken());}
+        //enddebug
+        
+        //handle parethesis token work
+        while( st.hasMoreTokens() )
+        {
+            token = st.nextToken( );
+            
+
+            
+            if( token.contains("("))
+            {
+                parenCount += count( token, '(');
+            }
+            
+            if( token.contains(")") )
+            {
+                parenCount -= count( token, ')');
+            }
+            
+            if( concatNext )
+            {
+                token = lastToken.concat(token);
+            }
+            
+            if( parenCount != 0 )
+            {
+                concatNext = true;
+                lastToken = token;
+            }
+            else
+            {
+                concatNext = false;
+            }
+            
+            lastToken = token;
+            if( parenCount == 0 || !st.hasMoreTokens() )
+            {
+                stQueue.add(token);
+            }
+        }
+        
+        
+        concatNext = false;
+        //handle "-"'s that are signs rather that operators
+        token = stQueue.poll();
+        //System.out.println("Debug "+token);
+        System.out.println( "Error with stuff debug -----------------");
+        if(token.equals("-"))
+        {
+            concatNext = true;
+            lastToken = token;
+        }
+        else if(token.endsWith("*") || token.endsWith( "/") || token.endsWith("%")  )
+        {
+            concatNext = true;
+            lastToken = token;
+        }
+        else
+        {
+			stParseQueue.add(token);
+            lastToken = token;
+        }
+        
+        //System.out.println(concatNext);
+        while( !stQueue.isEmpty() )
+        {
+            token = stQueue.poll();
+            token = token.trim();
+            if( token.equals(""))
+            {
+                //System.out.println( "nope");
+                continue;
+            }
+            //System.out.println("Debug" +concatNext);
+            //System.out.println("Debug "+token);
+
+            if( concatNext == true )
+            {
+                token = lastToken.concat(token);
+                lastToken = token;
+                concatNext = false;
+            }
+            
+            
+            if( token.endsWith("-") )
+            {
+                //System.out.println("Got here");
+                if( lastToken.endsWith("-") || lastToken.endsWith("+") )
+                {
+					System.out.println( "GOT here");
+                    concatNext = true;
+                    lastToken = token;
+                    continue;
+                }
+                else if( lastToken.endsWith("*") || lastToken.endsWith("/") ||
+                         lastToken.endsWith("%"))
+                {
+                    concatNext = true;
+                    token = lastToken.concat(token);
+                    lastToken = token;
+                    continue;
+                }
+            }
+            
+            //System.out.println(token);
+            lastToken = token;
+            stParseQueue.add(token);
+            
+        }
+        
+        
+		
+        token = stParseQueue.poll();
+		System.out.println( "DEBUG TOKEN SHOULD BE TERM: "+token);
+        if( !term(token))
+        {
+            return false;
+        }
+        
+        while( !stParseQueue.isEmpty() )
+        {
+            token = stParseQueue.poll( );
+            
+            try
+            {
+                token2 = stParseQueue.poll( );
+            }
+            catch( Exception ex )
+            {
+                return false;
+            }
+            
+			System.out.println( "DEBUG TOKEN SHOULD BE ADDOP: "+token);
+			System.out.println( "DEBUG TOKEN SHOULD BE TERM: "+token2);
+            if( !addop(token) || !term(token2) )
+            {
+                return false;
+            }
         }
         
         return true;
