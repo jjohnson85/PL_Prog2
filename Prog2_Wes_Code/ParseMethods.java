@@ -36,10 +36,12 @@ public class ParseMethods {
 	/**
 	* The main method eveluates expressions until an empty string is entered.<br>
 	* If the show tokens mode is specified with a command line argument of '-t' then 
-	* a list of tokens for each expression will be displayed. 
+	* a list of tokens for each expression will be displayed. <br>
+	*
 	*
 	* 
-	* @param args An array of the command line arguments
+	* @param args An array of the command line arguments<br>
+	* <br><b>Author: </b><br>Wesley Adams
 	*/
 	public static void main (String [] args)
 	{
@@ -107,8 +109,8 @@ public class ParseMethods {
 	* mulop:<br>
 	* {@literal <mulop> -> * | \ | %}
 	* @param x The string to be evaluated
-	* @return boolean : This returns true if x is a mulop and false otherwise
-	* 
+	* @return boolean : This returns true if x is a mulop and false otherwise<br>
+	* <br><b>Author: </b><br>Wesley Adams
 	*/
 	public static boolean mulop(String x)
 	{
@@ -126,8 +128,8 @@ public class ParseMethods {
 	* addop:<br>
 	* {@literal <addop> -> - | +}
 	* @param x - The string to be evaluated
-	* @return boolean: This returns true if x is an addop and false otherwise
-	* 
+	* @return boolean: This returns true if x is an addop and false otherwise<br>
+	* <br><b>Author: </b><br>Wesley Adams
 	*/
 	public static boolean addop(String x)
 	{
@@ -145,8 +147,8 @@ public class ParseMethods {
 	* digit:<br>
 	* {@literal <digit> -> 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 } 
 	* @param x The string to be evaluated
-	* @return boolean: This returns true if x is a digit and false otherwise
-	* 
+	* @return boolean: This returns true if x is a digit and false otherwise<br>
+	* <br><b>Author: </b><br>Wesley Adams
 	*/
 	public static boolean digit(String x)
 	{
@@ -171,8 +173,8 @@ public class ParseMethods {
 	* &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
 	*	          {@literal n | o | p | q | r | s | t | u | v | w | x | y | z | _ } <br>
 	* @param x The string to be evaluated
-	* @return boolean: This returns true if x is a letter and false otherwise
-	* 
+	* @return boolean: This returns true if x is a letter and false otherwise<br>
+	* <br><b>Author: </b><br>Wesley Adams
 	*/
 	public static boolean letter(String x)
 	{
@@ -222,8 +224,8 @@ public class ParseMethods {
 	* digit (recursive/BNF): <br>
 	*{@literal <integer> -> <digit> | <digit> <integer>}
 	* @param x The string to be evaluated
-	* @return boolean: This returns true if x is a integer and false otherwise
-	* 
+	* @return boolean: This returns true if x is a integer and false otherwise<br>
+	* <br><b>Author: </b><br>Wesley Adams
 	*/
 	public static boolean integer(String x)
 	{
@@ -255,8 +257,8 @@ public class ParseMethods {
 	* id:<br>
 	* {@literal <id> -> <letter> {<letter> | <digit> } }<br>
 	* @param x The string to be evaluated
-	* @return boolean: This returns true if x is an id and false otherwise
-	* 
+	* @return boolean: This returns true if x is an id and false otherwise<br>
+	* <br><b>Author: </b><br>Wesley Adams
 	*/
 	public static boolean id(String x)
 	{
@@ -334,8 +336,8 @@ public class ParseMethods {
 	* term (recursive/BNF): <br>
 	*{@literal <term> -> <factor> | <term> <mulop> <factor>}
 	* @param x The string to be evaluated
-	* @return boolean: This returns true if x is a term and false otherwise
-	* 
+	* @return boolean: This returns true if x is a term and false otherwis
+	* <br><b>Author: </b><br>Wesley Adams
 	*/
 	public static boolean term(String x)
 	{
