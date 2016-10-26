@@ -36,7 +36,8 @@ public class ParseMethods {
     /**
     * The main method eveluates expressions until an empty string is entered.<br>
     * If the show tokens mode is specified with a command line argument of '-t' then 
-    * a list of tokens for each expression will be displayed. 
+    * a list of tokens for each expression will be displayed.<br>
+    * Author: Wesley Adams
     *
     * 
     * @param args An array of the command line arguments
@@ -45,7 +46,6 @@ public class ParseMethods {
     {
         //*********************************************************************************
         Scanner input = new Scanner(System.in);
-        String again = "";
         String exp = "";
         while(true)
         {
@@ -87,7 +87,8 @@ public class ParseMethods {
     }
 	
     /**
-    * This method evaluates if a string is a mulop. <br><br>
+    * This method evaluates if a string is a mulop.<br>
+    * Author: Wesley Adams<br><br>
     * mulop:<br>
     * {@literal <mulop> -> * | \ | %}
     * @param x The string to be evaluated
@@ -103,7 +104,8 @@ public class ParseMethods {
     }
 
     /**
-    * This method evaluates if a string is an addop. <br><br>
+    * This method evaluates if a string is an addop.<br>
+    * Author: Wesley Adams<br><br>
     * addop:<br>
     * {@literal <addop> -> - | +}
     * @param x - The string to be evaluated
@@ -119,7 +121,8 @@ public class ParseMethods {
     }
 	
     /**
-    * This method evaluates if a string is a digit. <br><br>
+    * This method evaluates if a string is a digit.<br>
+    * Author: Wesley Adams<br><br>
     * digit:<br>
     * {@literal <digit> -> 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 } 
     * @param x The string to be evaluated
@@ -137,7 +140,8 @@ public class ParseMethods {
     }
 	
     /**
-    * This method evaluates if a string is a letter. <br><br>
+    * This method evaluates if a string is a letter.<br>
+    * Auhtor: Wesley Adams<br><br>
     * letter:<br>
     * {@literal <letter> -> A | B | C | D | E | F | G | H | I | J | K | L | M | } <br>
     * &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
@@ -183,7 +187,8 @@ public class ParseMethods {
     }
 	
     /**
-    * This  recursive method evaluates if a string is an integer. <br><br>
+    * This  recursive method evaluates if a string is an integer.<br>
+    * Author: Wesley Adams<br><br>
     * integer:<br>
     * {@literal <integer> -> <digit> {<digit>} }<br><br>
     * digit (recursive/BNF): <br>
@@ -217,7 +222,8 @@ public class ParseMethods {
     }
 	
     /**
-    * This method evaluates if a string is an id. <br><br>
+    * This method evaluates if a string is an id.<br>
+    * Author: Wesley Adams<br><br>
     * id:<br>
     * {@literal <id> -> <letter> {<letter> | <digit> } }<br>
     * @param x The string to be evaluated
@@ -250,14 +256,14 @@ public class ParseMethods {
         }
         else // length of 0
         {
-                return false;
+            return false;
         }
     }
 
     /**
     * This method evaluates the factor rewrite rule.<br>
-    * Author: Jared Johnson <br><br>
-    * term:<br>
+    * Author: Jared Johnson<br><br>
+    * factor:<br>
     * {@literal <factor> -> <id> | <integer> | <float> | '('<expr>')' | [-]<factor> <br><br>}
     *
     * @param st The string to be evaluated
@@ -300,8 +306,8 @@ public class ParseMethods {
     }
 	
     /**
-    * This recursive method evaluates if a string is a term.
-    * Author:<br> Wes Adams<br><br>
+    * This recursive method evaluates if a string is a term.<br>
+    * Author: Wesley Adams<br><br>
     * term:<br>
     * {@literal <term> -> <factor> {<mulop> <factor>} } <br><br>
     * term (recursive/BNF): <br>
@@ -370,15 +376,6 @@ public class ParseMethods {
             arr[i] = stList.get(i);
         }
 
-        //debug
-        System.out.println("evaluating term: [");
-        for(int i = 0; i < arr.length; i++)
-        {
-            System.out.println(arr[i]);
-        }
-        System.out.println("]");
-
-
         if(arr.length == 1) //must be only a factor if there are no multops 
         {
             return factor(x);
@@ -421,65 +418,49 @@ public class ParseMethods {
 
             // grab the contents of the last index for the factor
             String factorcheck = arr[lastMulop + 1];
-            //System.out.println ("factor: " + factorcheck);
 
             return (term(termcheck) && mulop(multop) && factor(factorcheck));
-
         }
-
     }
 	
     /**
     * This method evaluates the float rewrite rule.<br>
-    * Author: Wes Adams<br><br>
+    * Author: Jared Johnson<br><br>
     * term:<br>
     * {@literal <float> -> <integer> '.' <integer>} <br><br>
-    * float (recursive/BNF): <br>
-    *{@literal <term> -> <factor> | <term> <mulop> <factor>}
-    * @param x The string to be evaluated
-    * @return boolean: This returns true if x is a term and false otherwise
+    * @param st The string to be evaluated
+    * @return boolean: This returns true if x is a float and false otherwise
     * 
     */
-    public static boolean isfloat(String x)
+    public static boolean isfloat( String st )
     {
-        // <float> -> <integer> . <integer>
-        
-        if(x.contains("."))
-        {		
-            //split on '.' ( must escape because split takes a regex expression)
-            String[] parts = x.split("\\.");
-
-            // more than one '.' not allowed
-            if (parts.length > 2)
+        StringTokenizer sto = new StringTokenizer(st, ".", true);
+        String inttoken = new String();
+        String inttoken2 = new String( );
+        while( sto.hasMoreTokens() )
+        {
+            inttoken = sto.nextToken();
+            
+            try
+            {
+                sto.nextToken();
+                inttoken2 = sto.nextToken();
+            }
+            catch( Exception ex )
             {
                 return false;
             }
-            else
-            {
-                // strings before and after period must be integers
-                if (integer(parts[0]) && integer(parts[1]))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
         }
-        else // no period
-        {
-            return false;
-        }
+        return (integer(inttoken) && integer(inttoken2));
     }
 
     /**
-    * This recursive method evaluates the expr rewrite rule.<br>
+    * This method evaluates the expr rewrite rule.<br>
     * Author: Jared Johnson<br><br>
     * term:<br>
     * {@literal <expr> -> <term> {<addop> <term>} } <br><br>
     * term (recursive/BNF): <br>
-    *{@literal <expr> -> <term> | <expr> <addop> <term>}
+    * {@literal <expr> -> <term> | <expr> <addop> <term>}
     * @param x The string to be evaluated
     * @return boolean: This returns true if x is a term and false otherwise
     * 
@@ -495,17 +476,17 @@ public class ParseMethods {
         String token = new String( );
         String token2 = new String( );
         String lastToken = new String( );
+        
         Integer count = new Integer(0);
         Integer parenCount = new Integer(0);
         
         Boolean concatNext = new Boolean(false);
         
-        //handle parethesis token work
+        //Build groups of tokens that fall between parenthesis
         while( st.hasMoreTokens() )
         {
             token = st.nextToken( );
-
-            
+      
             if( token.contains("("))
             {
                 parenCount += count( token, '(');
@@ -537,17 +518,16 @@ public class ParseMethods {
                 stQueue.add(token);
             }
         }
-        
+
+        //Reset concat flag and get first token for '-' & mulop handling
         concatNext = false;
         token = stQueue.poll();
         token = token.trim();
         
-        if(token.equals("-"))
-        {
-            concatNext = true;
-            lastToken = token;
-        }
-        else if(token.endsWith("*") || token.endsWith( "/") || token.endsWith("%")  )
+        //If we have a negative or if our token ends with a mulop
+        //begin building a group for term evaluation
+        if(token.equals("-") || token.endsWith("*") || 
+            token.endsWith( "/") || token.endsWith("%"))
         {
             concatNext = true;
             lastToken = token;
@@ -558,21 +538,30 @@ public class ParseMethods {
             lastToken = token;
         }
         
+        //If we have an empty queue at this point, simply evaluate the last
+        //token as a term
         if( stQueue.isEmpty() )
         {
             stParseQueue.add(token);
             return term(token);
         }
         
-        //System.out.println(concatNext);
+        //Check the rest of the tokens in the queue
+        //Add constructed groups to a parse queue for final
+        //parsing with the rewrite rules term and addop
         while( !stQueue.isEmpty() )
         {
             token = stQueue.poll();
             token = token.trim();
+            
+            //Ignore empty string that may have
+            //appeared during the tokenization and trimming process
             if( token.equals(""))
             {
                 if( !stQueue.isEmpty( ) )
+                {
                     continue;
+                }
             }
 
             if( concatNext == true )
@@ -613,12 +602,14 @@ public class ParseMethods {
             stParseQueue.add(token);
         }
         	
+        //Test first item from parse queue as a term
         token = stParseQueue.poll();
         if( !term(token))
         {
             return false;
         }
         
+        //Test addop and term as repeating pairs
         while( !stParseQueue.isEmpty() )
         {
             token = stParseQueue.poll( );
