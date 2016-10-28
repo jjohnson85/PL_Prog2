@@ -51,18 +51,17 @@ public class ParseMethods {
         {
             System.out.print("Enter an expression: ");
             exp = input.nextLine();
-            System.out.println("");
 
             if(exp.equals("") || exp.matches("\\s+"))
             {
-                System.out.println("\nend of output");
+                System.out.println("(end of input)");
                 break;
             }
 
             if(expr(exp))
-                    System.out.println( "[" + exp + " is an expression]\n");
+                System.out.println( "\"" + exp + "\" is an expression\n");
             else
-                    System.out.println("[" + exp + " is not an expression]\n");
+                System.out.println("\"" + exp + "\" is not an expression\n");
 
             if (args.length > 0 && args[0].equals("-t"))
             {
@@ -597,10 +596,20 @@ public class ParseMethods {
                     }
                 }
             }
+            
+            if( token.endsWith("*") || token.endsWith("/") ||
+                token.endsWith("%") )
+            {
+                if( !stQueue.isEmpty( ))
+                {
+                    continue;
+                }
+            }
 
             lastToken = token;
             stParseQueue.add(token);
         }
+        
         	
         //Test first item from parse queue as a term
         token = stParseQueue.poll();
